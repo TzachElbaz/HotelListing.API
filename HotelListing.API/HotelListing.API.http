@@ -4,3 +4,36 @@ GET {{HotelListing.API_HostAddress}}/Hotels/
 Accept: application/json
 
 ###
+
+POST {{HotelListing.API_HostAddress}}/hotels
+Content-Type: application/json
+
+{
+  "id": 3 ,
+  "name": "Royal Beach",
+  "address": "789 Eilat",
+  "rating": 4.9
+}
+
+###
+
+@id=3
+DELETE {{HotelListing.API_HostAddress}}/hotels/{{id}}
+
+###
+
+GET {{HotelListing.API_HostAddress}}/hotels/{{id}}
+
+###
+
+PUT {{HotelListing.API_HostAddress}}/hotels/{{id}}
+Content-Type: application/json
+
+{
+  "id": 3,
+  "name": "Royal Beach",
+  "address": "789 Tel-Aviv",
+  "rating": 4.5
+}
+
+###
