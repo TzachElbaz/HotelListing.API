@@ -37,3 +37,7 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{HotelListing.API_HostAddress}}/countries
+
+###
