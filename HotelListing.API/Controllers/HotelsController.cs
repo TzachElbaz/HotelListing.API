@@ -24,23 +24,21 @@ namespace HotelListing.API.Controllers
 
         // GET: <hotelsController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetHotelDto>>> GetHotels()
+        public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels()
         {
             var hotels = await _hotelsRepository.GetAllAsync();
-            var records = _mapper.Map<List<GetHotelDto>>(hotels);
-            return Ok(records);
+            return Ok(_mapper.Map<List<HotelDto>>(hotels));
         }
 
         // GET <hotelsController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<HotelDto>> GetHotel(int id)
         {
-            var hotel = await _hotelsRepository.GetDetails(id);
+            var hotel = await _hotelsRepository.GetAsync(id);
             if (hotel == null)
                 return NotFound();
 
-            var hotelDto = _mapper.Map<HotelDto>(hotel);
-            return Ok(hotelDto);
+            return Ok(_mapper.Map<HotelDto>(hotel));
         }
 
         // POST <hotelsController>
@@ -48,7 +46,6 @@ namespace HotelListing.API.Controllers
         public async Task<ActionResult<Hotel>> PostHotel(CreateHotelDto newHotel)
         {
             var hotel = _mapper.Map<Hotel>(newHotel);
-
             var createdHotel = await _hotelsRepository.AddAsync(hotel);
 
             return CreatedAtAction("GetHotel", new { id = createdHotel.Id }, createdHotel);
@@ -56,10 +53,10 @@ namespace HotelListing.API.Controllers
 
         // PUT <hotelsController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutHotel(int id, UpdateHotelDto updatedHotel)
+        public async Task<ActionResult> PutHotel(int id, HotelDto updatedHotel)
         {
             if (id != updatedHotel.Id)
-                return BadRequest("Invalid Record Id");
+                return BadRequest("id Path-Parameter does not match the id field");
 
             var hotel = await _hotelsRepository.GetAsync(id);
             if (hotel == null) return NotFound();
