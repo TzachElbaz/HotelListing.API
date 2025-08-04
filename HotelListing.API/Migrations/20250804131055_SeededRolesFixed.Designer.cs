@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelListing.API.Migrations
 {
     [DbContext(typeof(HotelListingDbContext))]
-    [Migration("20250804125017_AddedDefaultRoles")]
-    partial class AddedDefaultRoles
+    [Migration("20250804131055_SeededRolesFixed")]
+    partial class SeededRolesFixed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -223,13 +223,13 @@ namespace HotelListing.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d0bacf3d-1652-49db-abec-fb5516df5e7b",
+                            Id = "1",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "85cdd42e-ae74-40d1-ac0b-f6c07ad02dfd",
+                            Id = "2",
                             Name = "User",
                             NormalizedName = "USER"
                         });
