@@ -2,7 +2,7 @@
 
 namespace HotelListing.API.Models.Users
 {
-    public class ApiUserDto
+    public class ApiUserDto : LoginDto
     {
         [Required]
         public string FirstName { get; set; }
@@ -10,12 +10,5 @@ namespace HotelListing.API.Models.Users
         [Required]
         public string LastName { get; set; }
         
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        
-        [Required]
-        [StringLength(15, MinimumLength = 6, ErrorMessage = "Password must be between 6-15 characters long.")]
-        public string Password { get; set; }
     }
 }
