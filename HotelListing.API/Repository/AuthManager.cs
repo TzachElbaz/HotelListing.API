@@ -126,7 +126,7 @@ namespace HotelListing.API.Repository
                 };
             }
 
-            //await _userManager.UpdateSecurityStampAsync(_user);
+            await _userManager.UpdateSecurityStampAsync(_user);
             return null;
 
         }
