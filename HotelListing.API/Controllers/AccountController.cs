@@ -1,5 +1,6 @@
 ﻿using HotelListing.API.Contracts;
 using HotelListing.API.Models.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.API.Controllers
@@ -36,6 +37,27 @@ namespace HotelListing.API.Controllers
             return Ok();
         }
 
+        // POST: Account/register/admin
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        [Route("register/admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> RegisterAdmin([FromBody] ApiUserDto ApiUserDto)
+        {
+            var errors = await _authManager.RegisterAdmin(ApiUserDto);
+            if (errors.Any())
+            {
+                foreach (var error in errors)
+                {
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+                return BadRequest(ModelState);
+            }
+            return Ok();
+        }
+
         // POST: Account/login
         [HttpPost]
         [Route("login")]
@@ -45,11 +67,27 @@ namespace HotelListing.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var isValidUser = await _authManager.Login(loginDto);
-            if (!isValidUser)
+            var authResponse = await _authManager.Login(loginDto);
+            if (authResponse == null)
                 return Unauthorized();
 
-            return Ok();
+            return Ok(authResponse);
+        }
+
+        // POST: Account/refreshtoken
+        [HttpPost]
+        [Route("refreshtoken")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> RefreshToken([FromBody] AuthResponseDto request)
+        {
+            var authResponse = await _authManager.VerifyRefreshToken(request);
+            if (authResponse == null)
+                return Unauthorized();
+
+            return Ok(authResponse);
         }
     }
 }
