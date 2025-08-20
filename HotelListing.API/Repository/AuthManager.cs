@@ -109,6 +109,8 @@ namespace HotelListing.API.Repository
             //var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             //var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(request.Token);
             //var userName = tokenContent.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            //_user = await _userManager.FindByNameAsync(userName);
+
             _user = await _userManager.FindByIdAsync(request.UserId);
 
             if (_user == null || _user.Id != request.UserId)
