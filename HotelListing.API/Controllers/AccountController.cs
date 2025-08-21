@@ -10,10 +10,12 @@ namespace HotelListing.API.Controllers
     public class AccountController : ControllerBase
     {
         private IAuthManager _authManager;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IAuthManager authManager)
+        public AccountController(IAuthManager authManager, ILogger<AccountController> logger)
         {
             _authManager = authManager;
+            _logger = logger;
         }
 
 
@@ -25,16 +27,18 @@ namespace HotelListing.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Register([FromBody] ApiUserDto ApiUserDto)
         {
-            var errors = await _authManager.Register(ApiUserDto);
-            if (errors.Any())
-            {
-                foreach (var error in errors)
+            _logger.LogInformation($"Registering Attempt for {ApiUserDto.Email}");
+
+                var errors = await _authManager.Register(ApiUserDto);
+                if (errors.Any())
                 {
-                    ModelState.AddModelError(error.Code, error.Description);
+                    foreach (var error in errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return BadRequest(ModelState);
                 }
-                return BadRequest(ModelState);
-            }
-            return Ok();
+                return Ok();
         }
 
         // POST: Account/register/admin
@@ -67,11 +71,13 @@ namespace HotelListing.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var authResponse = await _authManager.Login(loginDto);
-            if (authResponse == null)
-                return Unauthorized();
+            _logger.LogInformation($"Login Attempt for {loginDto.Email}");
 
-            return Ok(authResponse);
+                var authResponse = await _authManager.Login(loginDto);
+                if (authResponse == null)
+                    return Unauthorized();
+
+                return Ok(authResponse);
         }
 
         // POST: Account/refreshtoken
