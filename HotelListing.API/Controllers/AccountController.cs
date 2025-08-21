@@ -28,8 +28,7 @@ namespace HotelListing.API.Controllers
         public async Task<ActionResult> Register([FromBody] ApiUserDto ApiUserDto)
         {
             _logger.LogInformation($"Registering Attempt for {ApiUserDto.Email}");
-            try
-            {
+
                 var errors = await _authManager.Register(ApiUserDto);
                 if (errors.Any())
                 {
@@ -40,12 +39,6 @@ namespace HotelListing.API.Controllers
                     return BadRequest(ModelState);
                 }
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something Went Wrong in the {nameof(Register)}");
-                return Problem($"Something Went Wrong in the {nameof(Register)}", statusCode: 500);
-            }
         }
 
         // POST: Account/register/admin
@@ -80,19 +73,11 @@ namespace HotelListing.API.Controllers
         {
             _logger.LogInformation($"Login Attempt for {loginDto.Email}");
 
-            try
-            {
                 var authResponse = await _authManager.Login(loginDto);
                 if (authResponse == null)
                     return Unauthorized();
 
                 return Ok(authResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something Went Wrong in the {nameof(Login)}");
-                return Problem($"Something Went Wrong in the {nameof(Login)}", statusCode: 500);
-            }
         }
 
         // POST: Account/refreshtoken
