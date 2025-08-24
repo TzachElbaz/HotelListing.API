@@ -6,6 +6,7 @@ using HotelListing.API.Models.Hotel;
 using HotelListing.API.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using HotelListing.API.Models;
 
 
 namespace HotelListing.API.Controllers
@@ -23,12 +24,20 @@ namespace HotelListing.API.Controllers
             _hotelsRepository = hotelsrepository;
         }
 
-        // GET: <hotelsController>
-        [HttpGet]
+        // GET: /Hotels/GetAll
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels()
         {
             var hotels = await _hotelsRepository.GetAllAsync();
             return Ok(_mapper.Map<List<HotelDto>>(hotels));
+        }
+
+        // GET: Hotels?StartIndex=0&PageSize=25&PageNumber=1
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<HotelDto>>> GetPagedHotels([FromQuery]QueryParameters queryParameters)
+        {
+            var pagedHotelsResult = await _hotelsRepository.GetAllAsync< HotelDto>(queryParameters);
+            return Ok(pagedHotelsResult);
         }
 
         // GET <hotelsController>/5
