@@ -141,6 +141,17 @@ app.MapHealthChecks("/databasehealthcheck", new HealthCheckOptions
     ResponseWriter = WriteResponse
 });
 
+app.MapHealthChecks("/healthcheckz", new HealthCheckOptions
+{
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
+        [HealthStatus.Degraded] = StatusCodes.Status500InternalServerError
+    },
+    ResponseWriter = WriteResponse
+});
+
 static Task WriteResponse(HttpContext context, HealthReport healthReport)
 {
     context.Response.ContentType = "application/json; charset=utf-8";
