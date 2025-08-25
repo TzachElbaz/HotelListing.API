@@ -4,9 +4,11 @@ using HotelListing.API.Data;
 using HotelListing.API.Middleware;
 using HotelListing.API.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
@@ -91,6 +93,11 @@ builder.Services.AddResponseCaching(options =>
     options.UseCaseSensitivePaths = true;
 });
 
+builder.Services.AddHealthChecks()
+    .AddCheck<CustomHealthCheck>("Custom Health Check", failureStatus: HealthStatus.Degraded,
+    tags: new[] {"custom"}
+    );
+
 builder.Services.AddControllers().AddOData(options =>
 {
     options.Select().Filter().OrderBy();
@@ -107,6 +114,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapHealthChecks("/healthcheck", new HealthCheckOptions 
+{
+    Predicate = healthcheck => healthcheck.Tags.Contains("custom")
+});
+
+app.UseSerilogRequestLogging();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -136,3 +150,21 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public class CustomHealthCheck : IHealthCheck
+{
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    {
+        var isHealthy = true;
+
+        // Custom logic to determine health status
+
+        if (isHealthy)
+        {
+            return Task.FromResult(HealthCheckResult.Healthy("The check indicates a healthy result."));
+        }
+
+        return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, "The check indicates an unhealthy result."));
+
+    }
+}
